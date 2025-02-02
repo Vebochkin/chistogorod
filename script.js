@@ -167,30 +167,3 @@ document.getElementById('photoUpload').addEventListener('change', function() {
     document.getElementById('selectedFile').textContent = this.files[0]?.name || '';
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-    emailjs.init('yWviMmSiIG6mGUzzn');
-
-    document.getElementById('myForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const formData = {
-            name: this.name.value,
-            trashType: this.trashType.value,
-            address: this.address.value,
-            requestDate: new Date().toLocaleDateString('ru-RU'),
-            email: this.email.value
-        };
-
-        emailjs.send('eco_ChistoGorod2025', 'template_w8n27yf', formData)
-            .then(function(response) {
-                console.log('SUCCESS!', response.status, response.text);
-                document.getElementById('notification').style.display = 'flex';
-                setTimeout(() => {
-                    document.getElementById('notification').style.display = 'none';
-                }, 3000);
-            }, function(error) {
-                console.log('FAILED...', error);
-                alert('Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз.');
-            });
-    });
-});
