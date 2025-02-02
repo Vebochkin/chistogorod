@@ -156,24 +156,10 @@ function resetForm() {
 
 function showNotification() {
     const notification = document.getElementById('notification');
-
-    // Сначала делаем элемент видимым для расчета размеров
     notification.style.display = 'flex';
-    notification.style.visibility = 'hidden';
-
-    // Принудительный рефлоу для применения стилей
-    void notification.offsetWidth;
-
-    // Показываем с анимацией
-    notification.style.visibility = 'visible';
-    notification.style.opacity = '1';
-
     setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 300);
-    }, 2700);
+        notification.style.display = 'none';
+    }, 3000);
 }
 
 // Обработчик файлов
@@ -184,8 +170,8 @@ document.getElementById('photoUpload').addEventListener('change', function() {
 document.addEventListener('DOMContentLoaded', function() {
     emailjs.init('yWviMmSiIG6mGUzzn');
 
-  document.getElementById('myForm').addEventListener('submit', async e => {
-    e.preventDefault();
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
         const formData = {
             name: this.name.value,
@@ -201,12 +187,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('notification').style.display = 'flex';
                 setTimeout(() => {
                     document.getElementById('notification').style.display = 'none';
-                }, 100);
+                }, 3000);
             }, function(error) {
                 console.log('FAILED...', error);
                 alert('Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз.');
             });
     });
 });
-
- 
