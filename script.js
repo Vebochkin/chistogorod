@@ -194,3 +194,46 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 });
+
+// Функция для добавления рабочих дней
+function addWorkDays(startDate, daysToAdd) {
+    let count = 0;
+    const date = new Date(startDate);
+    while (count < daysToAdd) {
+        date.setDate(date.getDate() + 1);
+        if (date.getDay() !== 0 && date.getDay() !== 6) { // Пропускаем выходные
+            count++;
+        }
+    }
+    return date;
+}
+
+// Форматирование даты
+function formatDate(date) {
+    return date.toLocaleDateString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+}
+
+// Расчет дат
+const currentDate = new Date();
+const inWorkDate = addWorkDays(currentDate, 1); // +1 рабочий день
+const completionDate = addWorkDays(currentDate, 6); // +6 рабочих дней
+
+// Определение текущего этапа
+let stage = 0;
+if (new Date() >= inWorkDate) stage = 1;
+if (new Date() >= completionDate) stage = 2;
+
+// Данные для шаблона
+const templateParams = {
+    name: document.querySelector('[name="name"]').value,
+    trashType: document.querySelector('[name="trashType"]:checked').value,
+    address: document.querySelector('[name="address"]').value,
+    requestDate: formatDate(currentDate),
+    inWorkDate: formatDate(inWorkDate),
+    completionDate: formatDate(completionDate),
+    stage: stage
+};
