@@ -121,8 +121,29 @@ async function uploadImage(file) {
 // Отправка формы
 document.getElementById('myForm').addEventListener('submit', async e => {
     e.preventDefault();
+    // Добавьте в начало обработчика submit
+const requiredFields = [
+    'input[name="trashType"]:checked',
+    '[name="address"]',
+    '[name="name"]',
+    '[name="phone"]',
+    '[name="email"]'
+];
+
+for (const selector of requiredFields) {
+    if (!document.querySelector(selector)) {
+        throw new Error('Пожалуйста, заполните все обязательные поля');
+    }
+}
     
     try {
+        // Добавляем дату заявки
+        const requestDate = new Date().toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+
         const formData = {
             trashType: document.querySelector('input[name="trashType"]:checked').value,
             address: document.querySelector('[name="address"]').value,
@@ -130,14 +151,19 @@ document.getElementById('myForm').addEventListener('submit', async e => {
             name: document.querySelector('[name="name"]').value,
             phone: document.querySelector('[name="phone"]').value,
             email: document.querySelector('[name="email"]').value,
+            requestDate: requestDate, // Добавленная дата
             photo_url: await uploadImage(document.getElementById('photoUpload').files[0]),
             theme: document.documentElement.getAttribute('data-theme') || 'light'
         };
 
+        // Отправка письма с указанием получателя
         await emailjs.send(
             'eco_ChistoGorod2025',
-            'template_confirmation',
-            formData
+            'template_w8n27yf',
+            {
+                ...formData,
+                to_email: formData.email // Указываем получателя
+            }
         );
 
         showNotification();
@@ -166,4 +192,3 @@ function showNotification() {
 document.getElementById('photoUpload').addEventListener('change', function() {
     document.getElementById('selectedFile').textContent = this.files[0]?.name || '';
 });
-
