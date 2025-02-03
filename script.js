@@ -118,31 +118,36 @@ async function uploadImage(file) {
     }
 }
 
-// Отправка формы
 document.getElementById('myForm').addEventListener('submit', async e => {
     e.preventDefault();
-    // Добавьте в начало обработчика submit
-const requiredFields = [
-    'input[name="trashType"]:checked',
-    '[name="address"]',
-    '[name="name"]',
-    '[name="phone"]',
-    '[name="email"]'
-];
-
-for (const selector of requiredFields) {
-    if (!document.querySelector(selector)) {
-        throw new Error('Пожалуйста, заполните все обязательные поля');
-    }
-}
     
+    // Проверка обязательных полей
+    const requiredFields = [
+        'input[name="trashType"]:checked',
+        '[name="address"]',
+        '[name="name"]',
+        '[name="phone"]',
+        '[name="email"]',
+        '#coordinates',
+        '#photoUpload'
+    ];
+
+    for (const selector of requiredFields) {
+        if (!document.querySelector(selector)?.value && !document.querySelector(selector)?.files[0]) {
+            throw new Error('Пожалуйста, заполните все обязательные поля');
+        }
+    }
+
     try {
-        // Добавляем дату заявки
         const requestDate = new Date().toLocaleDateString('ru-RU', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
         });
+
+        // Загрузка фото
+        const photoFile = document.getElementById('photoUpload').files[0];
+        const photo_url = await uploadImage(photoFile);
 
         const formData = {
             trashType: document.querySelector('input[name="trashType"]:checked').value,
@@ -151,18 +156,27 @@ for (const selector of requiredFields) {
             name: document.querySelector('[name="name"]').value,
             phone: document.querySelector('[name="phone"]').value,
             email: document.querySelector('[name="email"]').value,
-            requestDate: requestDate, // Добавленная дата
-            photo_url: await uploadImage(document.getElementById('photoUpload').files[0]),
-            theme: document.documentElement.getAttribute('data-theme') || 'light'
+            requestDate: requestDate,
+            photo_url: photo_url
         };
 
-        // Отправка письма с указанием получателя
+        // Отправка письма администратору
         await emailjs.send(
             'eco_ChistoGorod2025',
-            'template_w8n27yf',
+            'template_confirmation', // Шаблон для администратора
             {
                 ...formData,
-                to_email: formData.email // Указываем получателя
+                to_email: 'chistoygorod@gmail.com' // Фиксированный email администратора
+            }
+        );
+
+        // Отправка письма пользователю
+        await emailjs.send(
+            'eco_ChistoGorod2025', 
+            'template_w8n27yf', // Шаблон для пользователя
+            {
+                ...formData,
+                to_email: formData.email // Email из формы
             }
         );
 
