@@ -1,28 +1,7 @@
 // Инициализация EmailJS
 emailjs.init('yWviMmSiIG6mGUzzn');
 
-// Обновленная функция показа уведомления
-function showNotification() {
-    const notification = document.getElementById('notification');
-    
-    // Сначала делаем элемент видимым для расчета размеров
-    notification.style.display = 'flex';
-    notification.style.visibility = 'hidden';
-    
-    // Принудительный рефлоу для применения стилей
-    void notification.offsetWidth;
-    
-    // Показываем с анимацией
-    notification.style.visibility = 'visible';
-    notification.style.opacity = '1';
-    
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 300);
-    }, 100);
-}
+ 
 // Тема
 const themeSwitcher = document.querySelector('.theme-switcher');
 const setTheme = (isDark) => {
@@ -218,10 +197,22 @@ function resetForm() {
 
 function showNotification() {
     const notification = document.getElementById('notification');
-    notification.style.display = 'flex';
+    
+    // Сброс анимации
+    notification.classList.remove('active');
+    void notification.offsetWidth;
+    
+    // Запуск анимации
+    notification.classList.add('active');
+    
+    // Автоматическое скрытие
     setTimeout(() => {
-        notification.style.display = 'none';
-    }, 3000);
+        notification.classList.remove('active');
+    }, 4000);
+}
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+if(localStorage.getItem('theme') === null) {
+    setTheme(prefersDark);
 }
 
 // Обработчик файлов
